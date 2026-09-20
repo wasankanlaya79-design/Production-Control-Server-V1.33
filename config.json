@@ -1,0 +1,11 @@
+{
+  "PORT": 3000,
+  "LOCAL_DATA_ROOT": "E:\\ProductionControlData",
+  "ONEDRIVE_SYNC_FOLDER": "E:\\OneDrive - บริษัท เทพฤกษ์ จำกัด\\ProductionControl",
+  "ADMIN_PIN": "12345",
+  "LINE_HEAD_PIN": "12345",
+  "PLANNER_PIN": "12345",
+  "LINES": 18,
+  "RETRY_SECONDS": 5,
+  "OPEN_BROWSER_ON_START": true
+}
