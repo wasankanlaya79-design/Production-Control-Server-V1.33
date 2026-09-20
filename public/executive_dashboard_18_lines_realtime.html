@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Executive Production Dashboard — 18 Lines</title>
+<style>
+:root{
+  --navy:#0b2d55; --blue:#1568d7; --green:#17a34a; --orange:#f59e0b;
+  --red:#e5484d; --gray:#64748b; --bg:#eef4fa; --card:#fff; --border:#dbe6f0;
+  --text:#0f2946; --muted:#657a90;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,"Tahoma",sans-serif;background:linear-gradient(180deg,#f8fbff,#edf4fa);color:var(--text)}
+header{
+  background:linear-gradient(90deg,#fff 0%,#f8fbff 72%,#eaf3fb 100%);
+  border-bottom:1px solid var(--border);padding:14px 24px;display:flex;justify-content:space-between;
+  align-items:center;gap:20px;position:sticky;top:0;z-index:10
+}
+.brand h1{margin:0;font-size:26px;color:var(--navy)}
+.brand p{margin:4px 0 0;color:var(--muted);font-size:12px}
+.head-right{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.badge{padding:8px 12px;border-radius:999px;background:#e9f2ff;color:#145db3;font-weight:800;font-size:12px}
+.clock{font-weight:800;color:#173f68}
+
+.wrap{max-width:1700px;margin:auto;padding:18px 24px 30px}
+.kpis{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-bottom:16px}
+.kpi{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;box-shadow:0 8px 20px rgba(15,50,85,.06)}
+.kpi small{display:block;color:var(--muted);font-weight:700;margin-bottom:5px}
+.kpi strong{font-size:28px;color:var(--navy)}
+.kpi .sub{font-size:11px;color:var(--muted);margin-top:4px}
+.toolbar{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:14px 0}
+.toolbar h2{margin:0;font-size:18px}
+.tools{display:flex;gap:8px;flex-wrap:wrap}
+.tools input,.tools select{height:38px;border:1px solid #cbd9e6;border-radius:9px;padding:0 11px;background:white}
+.btn{height:38px;border:1px solid #cbd9e6;background:white;border-radius:9px;padding:0 12px;font-weight:800;color:#315979;cursor:pointer}
+.btn.active{background:var(--blue);color:white;border-color:var(--blue)}
+
+.grid{display:grid;grid-template-columns:repeat(6,minmax(200px,1fr));gap:12px}
+.card{
+  background:white;border:1px solid var(--border);border-radius:14px;padding:14px;box-shadow:0 8px 18px rgba(15,50,85,.05);
+  position:relative;overflow:hidden
+}
+.card:before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--gray)}
+.card.running:before{background:var(--green)}
+.card.ready:before{background:var(--orange)}
+.card.paused:before{background:#d97706}
+.card.closed:before{background:var(--gray)}
+.card.alert:before{background:var(--red)}
+.card-head{display:flex;justify-content:space-between;gap:8px;align-items:center}
+.line{font-size:21px;font-weight:900;color:var(--navy)}
+.status{font-size:10px;font-weight:900;padding:5px 8px;border-radius:999px;background:#eef2f6;color:#617284}
+.status.running{background:#dcf7e5;color:#0f8a3d}
+.status.ready{background:#fff1d6;color:#ce7408}
+.status.paused{background:#fff0db;color:#c76a05}
+.status.closed{background:#edf1f5;color:#64748b}
+.fo{margin:10px 0;color:#52708c;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.progress{height:8px;background:#e7edf4;border-radius:99px;overflow:hidden}
+.progress span{display:block;height:100%;background:linear-gradient(90deg,#19aa52,#2ac46a);border-radius:99px}
+.metrics{display:grid;grid-template-columns:repeat(3,1fr);margin-top:12px}
+.metrics div{border-right:1px solid #e2eaf1;padding:0 6px}
+.metrics div:first-child{padding-left:0}
+.metrics div:last-child{border-right:0}
+.metrics small{display:block;color:#6b7f91;font-size:9px}
+.metrics b{display:block;margin-top:2px;color:#0b2d55;font-size:15px}
+.card-footer{display:flex;justify-content:space-between;margin-top:11px;font-size:10px;color:#657a90}
+.alert-text{color:var(--red);font-weight:800}
+
+.panel{margin-top:18px;display:grid;grid-template-columns:2fr 1fr;gap:12px}
+.box{background:#fff;border:1px solid var(--border);border-radius:14px;padding:14px}
+.box h3{margin:0 0 10px;font-size:15px}
+.table{width:100%;border-collapse:collapse;font-size:12px}
+.table th{background:#0f1f35;color:white;text-align:left;padding:9px}
+.table td{padding:8px;border-bottom:1px solid #e5edf4}
+.table tr:last-child td{border-bottom:0}
+
+.legend{display:flex;gap:12px;flex-wrap:wrap;font-size:11px;color:#526b82}
+.dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:4px}
+.dot.run{background:var(--green)} .dot.ready{background:var(--orange)} .dot.pause{background:#d97706} .dot.off{background:var(--gray)} .dot.alert{background:var(--red)}
+
+@media(max-width:1450px){.grid{grid-template-columns:repeat(4,1fr)}.kpis{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:950px){.grid{grid-template-columns:repeat(2,1fr)}.panel{grid-template-columns:1fr}.kpis{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:600px){.grid,.kpis{grid-template-columns:1fr}.toolbar{align-items:flex-start;flex-direction:column}}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">
+    <h1>Executive Production Dashboard — 18 Lines</h1>
+    <p>สถานะการผลิตแบบ Real-time สำหรับผู้บริหาร • Actual / Target / Remaining / Achievement / FO Status</p>
+  </div>
+  <div class="head-right">
+    <span class="badge" id="serverBadge">LIVE • Refresh 5 sec</span>
+    <span class="clock" id="clock">-</span>
+  </div>
+</header>
+
+<div class="wrap">
+  <section class="kpis">
+    <div class="kpi"><small>ไลน์ที่กำลังผลิต</small><strong id="kRunning">0 / 18</strong><div class="sub">RUNNING</div></div>
+    <div class="kpi"><small>ผลผลิตรวมวันนี้</small><strong id="kActual">0</strong><div class="sub">OK + NG</div></div>
+    <div class="kpi"><small>เป้าหมายรวมวันนี้</small><strong id="kTarget">0</strong><div class="sub">Target Today</div></div>
+    <div class="kpi"><small>Achievement รวม</small><strong id="kAch">0.0%</strong><div class="sub">Actual ÷ Target</div></div>
+    <div class="kpi"><small>งานคงเหลือรวม</small><strong id="kRemain">0</strong><div class="sub">ยอดงานที่ต้องผลิต</div></div>
+    <div class="kpi"><small>Line ที่ต้องติดตาม</small><strong id="kAlert">0</strong><div class="sub">ต่ำกว่า 80% หรือหยุด/พัก</div></div>
+  </section>
+
+  <div class="toolbar">
+    <h2>สถานะ LINE01–LINE18</h2>
+    <div class="tools">
+      <input id="search" placeholder="ค้นหา Line / FO">
+      <select id="statusFilter">
+        <option value="">ทุกสถานะ</option>
+        <option value="RUNNING">กำลังผลิต</option>
+        <option value="READY">รอเริ่มผลิต</option>
+        <option value="PAUSED">พักงาน</option>
+        <option value="CLOSED">ปิด FO</option>
+      </select>
+      <button class="btn active" id="btnAuto">Auto Refresh</button>
+      <button class="btn" id="btnNow">Refresh Now</button>
+    </div>
+  </div>
+
+  <div class="legend">
+    <span><i class="dot run"></i>กำลังผลิต</span>
+    <span><i class="dot ready"></i>รอเริ่มผลิต</span>
+    <span><i class="dot pause"></i>พักงาน</span>
+    <span><i class="dot off"></i>ยังไม่พร้อม / ปิด FO</span>
+    <span><i class="dot alert"></i>ต้องติดตาม</span>
+  </div>
+
+  <section id="grid" class="grid"></section>
+
+  <section class="panel">
+    <div class="box">
+      <h3>Line ที่ควรติดตาม</h3>
+      <table class="table">
+        <thead><tr><th>Line</th><th>FO</th><th>Status</th><th>Actual</th><th>Target</th><th>Achievement</th><th>เหตุผล</th></tr></thead>
+        <tbody id="alertRows"><tr><td colspan="7">ยังไม่มีข้อมูล</td></tr></tbody>
+      </table>
+    </div>
+    <div class="box">
+      <h3>สรุปสถานะ</h3>
+      <table class="table">
+        <tbody>
+          <tr><td>กำลังผลิต</td><td id="sRun">0</td></tr>
+          <tr><td>รอเริ่มผลิต</td><td id="sReady">0</td></tr>
+          <tr><td>พักงาน</td><td id="sPause">0</td></tr>
+          <tr><td>ปิด FO / ยังไม่พร้อม</td><td id="sClosed">18</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>
+
+<script>
+const LINES = Array.from({length:18},(_,i)=>`LINE${String(i+1).padStart(2,"0")}`);
+let STATE = {};
+let timer = null;
+
+function fmt(n){ return Math.round(Number(n||0)).toLocaleString(); }
+function todayIso(){
+  const d=new Date(), y=d.getFullYear(), m=String(d.getMonth()+1).padStart(2,"0"), day=String(d.getDate()).padStart(2,"0");
+  return `${y}-${m}-${day}`;
+}
+function statusLabel(s,hasFo){
+  s=String(s||"READY").toUpperCase();
+  if(!hasFo) return ["ยังไม่พร้อม","closed"];
+  if(s==="RUNNING") return ["กำลังผลิต","running"];
+  if(s==="PAUSED") return ["พักงาน","paused"];
+  if(s==="CLOSED") return ["ปิด FO","closed"];
+  return ["รอเริ่มผลิต","ready"];
+}
+function metrics(payload,line){
+  const w=payload?.workspace||{};
+  const f=w.form||{};
+  const fo=String(f.fo||"").trim();
+  const status=String(w.prodStatus||"READY").toUpperCase();
+  const cutting=Number(f.qty||0);
+  const prev=Number(f.previousCum||0);
+  const rows=w.prodRows||{};
+  const today=todayIso();
+
+  let dayOk=0,dayNg=0,dayRepair=0,foOk=0,foNg=0;
+  for(const [key,v] of Object.entries(rows)){
+    const [date]=String(key).split("|");
+    const ok=Number(v?.ok||0), ng=Number(v?.ng||0), repair=Number(v?.repair||0);
+    foOk+=ok; foNg+=ng;
+    if(date===today){ dayOk+=ok; dayNg+=ng; dayRepair+=repair; }
+  }
+
+  let targetToday=0;
+  // Prefer planned target if available in the workspace.
+  const planned=w.planDays||w.plan||[];
+  if(Array.isArray(planned)){
+    const row=planned.find(x=>String(x?.date||x?.productionDate||"")===today);
+    if(row) targetToday=Number(row.target||row.dayTarget||row.targetToday||0);
+  }
+  if(!targetToday){
+    // Fallback: sum current-day target from prodRows if saved there.
+    for(const [key,v] of Object.entries(rows)){
+      const [date]=String(key).split("|");
+      if(date===today) targetToday+=Number(v?.target||0);
+    }
+  }
+
+  const actualToday=dayOk+dayNg;
+  const ach=targetToday>0?(actualToday/targetToday)*100:0;
+  const foCum=prev+foOk+foNg;
+  const remaining=Math.max(0,cutting-foCum);
+  const progress=cutting>0?Math.min(100,(foCum/cutting)*100):0;
+
+  return {line,fo,status,cutting,actualToday,targetToday,ach,foCum,remaining,dayOk,dayNg,dayRepair,progress};
+}
+
+async function fetchLine(line){
+  const res=await fetch(`/api/line/state?line=${encodeURIComponent(line)}&_=${Date.now()}`,{headers:{"Accept":"application/json"}});
+  const data=await res.json().catch(()=>({}));
+  if(!res.ok || data.ok===false) throw new Error(data.message||`HTTP ${res.status}`);
+  return metrics(data,line);
+}
+
+async function refresh(){
+  document.getElementById("serverBadge").textContent="LIVE • Updating...";
+  const jobs=LINES.map(async line=>{
+    try{ STATE[line]=await fetchLine(line); }
+    catch(e){ STATE[line]={line,fo:"",status:"OFFLINE",cutting:0,actualToday:0,targetToday:0,ach:0,foCum:0,remaining:0,progress:0,error:e.message}; }
+  });
+  await Promise.allSettled(jobs);
+  render();
+  document.getElementById("serverBadge").textContent="LIVE • Refresh 5 sec";
+}
+
+function render(){
+  const q=document.getElementById("search").value.trim().toUpperCase();
+  const sf=document.getElementById("statusFilter").value;
+
+  let running=0, ready=0, paused=0, closed=0, actual=0, target=0, remain=0, alertCount=0;
+  const alerts=[];
+
+  for(const x of Object.values(STATE)){
+    if(x.status==="RUNNING") running++;
+    else if(x.status==="PAUSED") paused++;
+    else if(x.status==="READY" && x.fo) ready++;
+    else closed++;
+
+    actual+=x.actualToday||0; target+=x.targetToday||0; remain+=x.remaining||0;
+
+    const needFollow=(x.status==="PAUSED") || (x.status==="RUNNING" && x.targetToday>0 && x.ach<80);
+    if(needFollow){
+      alertCount++;
+      alerts.push({...x,reason:x.status==="PAUSED"?"พักงาน":`Achievement ${x.ach.toFixed(1)}%`});
+    }
+  }
+
+  const ach=target>0?(actual/target)*100:0;
+  document.getElementById("kRunning").textContent=`${running} / 18`;
+  document.getElementById("kActual").textContent=fmt(actual);
+  document.getElementById("kTarget").textContent=fmt(target);
+  document.getElementById("kAch").textContent=`${ach.toFixed(1)}%`;
+  document.getElementById("kRemain").textContent=fmt(remain);
+  document.getElementById("kAlert").textContent=alertCount;
+  document.getElementById("sRun").textContent=running;
+  document.getElementById("sReady").textContent=ready;
+  document.getElementById("sPause").textContent=paused;
+  document.getElementById("sClosed").textContent=closed;
+
+  const cards=LINES.map(line=>{
+    const x=STATE[line]||{line,fo:"",status:"OFFLINE",actualToday:0,targetToday:0,ach:0,remaining:0,foCum:0,cutting:0,progress:0};
+    const [label,cls]=statusLabel(x.status,!!x.fo);
+    const needFollow=(x.status==="PAUSED") || (x.status==="RUNNING" && x.targetToday>0 && x.ach<80);
+    const hidden=(q && !`${line} ${x.fo||""}`.toUpperCase().includes(q)) || (sf && x.status!==sf);
+    return `<article class="card ${needFollow?"alert":cls}" style="${hidden?"display:none":""}">
+      <div class="card-head">
+        <div class="line">${line}</div>
+        <span class="status ${cls}">${label}</span>
+      </div>
+      <div class="fo">FO: ${x.fo||"-"}</div>
+      <div class="progress"><span style="width:${x.progress||0}%"></span></div>
+      <div class="metrics">
+        <div><small>ผลิตวันนี้</small><b>${fmt(x.actualToday)}</b></div>
+        <div><small>เป้าหมายวันนี้</small><b>${fmt(x.targetToday)}</b></div>
+        <div><small>คงเหลือ FO</small><b>${fmt(x.remaining)}</b></div>
+      </div>
+      <div class="card-footer">
+        <span>Achievement <b>${(x.ach||0).toFixed(1)}%</b></span>
+        <span>FO Cum ${fmt(x.foCum)}</span>
+      </div>
+      ${needFollow?`<div class="card-footer alert-text">ต้องติดตาม</div>`:""}
+    </article>`;
+  }).join("");
+  document.getElementById("grid").innerHTML=cards;
+
+  document.getElementById("alertRows").innerHTML=alerts.length?alerts.map(x=>`
+    <tr><td>${x.line}</td><td>${x.fo||"-"}</td><td>${x.status}</td><td>${fmt(x.actualToday)}</td>
+    <td>${fmt(x.targetToday)}</td><td>${x.ach.toFixed(1)}%</td><td>${x.reason}</td></tr>`).join("")
+    : `<tr><td colspan="7">ไม่มี Line ที่ต้องติดตาม</td></tr>`;
+}
+
+document.getElementById("search").addEventListener("input",render);
+document.getElementById("statusFilter").addEventListener("change",render);
+document.getElementById("btnNow").addEventListener("click",refresh);
+document.getElementById("btnAuto").addEventListener("click",()=>{
+  if(timer){ clearInterval(timer); timer=null; document.getElementById("btnAuto").classList.remove("active"); document.getElementById("btnAuto").textContent="Auto Refresh Off"; }
+  else{ timer=setInterval(refresh,5000); document.getElementById("btnAuto").classList.add("active"); document.getElementById("btnAuto").textContent="Auto Refresh"; }
+});
+setInterval(()=>document.getElementById("clock").textContent=new Date().toLocaleString("th-TH"),1000);
+timer=setInterval(refresh,5000);
+refresh();
+</script>
+</body>
+</html>
