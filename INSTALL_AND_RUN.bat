@@ -7,7 +7,7 @@ echo ===============================================
 echo Production Control Server - First Installation
 echo ===============================================
 
-echo [1/3] Checking Node.js...
+echo [1/4] Checking Node.js...
 where node >nul 2>&1
 if errorlevel 1 (
   echo.
@@ -18,7 +18,7 @@ if errorlevel 1 (
 )
 node -v
 
-echo [2/3] Installing required packages...
+echo [2/4] Installing required packages...
 if not exist node_modules\exceljs (
   call npm.cmd install
   if errorlevel 1 (
@@ -30,6 +30,14 @@ if not exist node_modules\exceljs (
   echo node_modules already installed.
 )
 
-echo [3/3] Starting server...
+echo [3/4] Building modular server...
+node tools\build-server.js
+if errorlevel 1 (
+  echo ERROR: server build failed.
+  pause
+  exit /b 1
+)
+
+echo [4/4] Starting server...
 start "Production Control Server" cmd /k "cd /d ""%~dp0"" && node server.js"
 exit /b 0
